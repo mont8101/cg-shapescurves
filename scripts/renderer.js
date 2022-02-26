@@ -17,6 +17,7 @@ class Renderer {
         this.drawSlide(this.slide_idx);
     }
 
+
     // flag:  bool
     showPoints(flag) {
         this.show_points = flag;
@@ -83,15 +84,15 @@ class Renderer {
         let tot_pts = this.num_curve_sections;  
         let deg = 0;
         let deg_inc = 360/tot_pts;
-        let nextX = center.x + radius * Math.cos(360);
-        let nextY = center.y + radius * Math.sin(360);
+        let nextX = center.x + radius * Math.cos(deg * Math.PI / 180);
+        let nextY = center.y + radius * Math.sin(deg * Math.PI / 180);
 
         for(let i = 0; i < tot_pts; i++){
-                let x0 = nextX
-                let y0 = nextY
+                let x0 = nextX;
+                let y0 = nextY;
                 deg = deg + deg_inc;
-                let x1 = center.x + radius * Math.cos(deg);
-                let y1 = center.y + radius * Math.sin(deg);
+                let x1 = center.x + (radius * Math.cos(deg * Math.PI / 180));
+                let y1 = center.y + (radius * Math.sin(deg * Math.PI / 180));
                 this.drawLine({x: x0, y: y0}, {x: x1, y: y1}, [0, 255, 0, 255], ctx);
                 nextX = x1;
                 nextY = y1;
