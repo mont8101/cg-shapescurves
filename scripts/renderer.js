@@ -57,7 +57,7 @@ class Renderer {
 
     // ctx:          canvas context
     drawSlide2(ctx) {
-        return this.drawBezierCurve(150, 200, 150, 100, [1, 255, 3, 255], ctx);
+        return this.drawBezierCurve({x: 100, y: 100}, {x: 200, y: 700}, {x: 500, y: 600}, {x: 400, y: 100}, [1, 255, 3, 255], ctx);
     }
 
     // ctx:          canvas context
@@ -93,7 +93,7 @@ class Renderer {
                 deg = deg + deg_inc;
                 let x1 = center.x + (radius * Math.cos(deg * Math.PI / 180));
                 let y1 = center.y + (radius * Math.sin(deg * Math.PI / 180));
-                this.drawLine({x: x0, y: y0}, {x: x1, y: y1}, [0, 255, 0, 255], ctx);
+                this.drawLine({x: x0, y: y0}, {x: x1, y: y1}, color, ctx);
                 nextX = x1;
                 nextY = y1;
         }
@@ -106,7 +106,27 @@ class Renderer {
     // color:        array of int [R, G, B, A]
     // ctx:          canvas context
     drawBezierCurve(pt0, pt1, pt2, pt3, color, ctx) {
+        let tot_pts = this.num_curve_sections; 
+        let t_chunk = 1/tot_pts;
+        let t = 0;
+        let nextX = Math.pow(1-t, 3) * pt0.x + 3 * Math.pow(1-t, 2) * t * pt1.x + 3 * (1 - t) * Math.pow(t, 2) * pt2.x + Math.pow(t, 3) * pt3.x;
+        let nextY = Math.pow(1-t, 3) * pt0.y + 3 * Math.pow(1-t, 2) * t * pt1.y + 3 * (1 - t) * Math.pow(t, 2) * pt2.y + Math.pow(t, 3) * pt3.y;
         
+        for(let i = 0; i < tot_pts; i++){
+            let x0 = nextX;
+            console.log("nextX: " + nextX);
+            let y0 = nextY;
+            console.log("nextY: " + nextY);
+            t = t + t_chunk;
+            let x1 = Math.pow(1-t, 3) * pt0.x + 3 * Math.pow(1-t, 2) * t * pt1.x + 3 * (1 - t) * Math.pow(t, 2) * pt2.x + Math.pow(t, 3) * pt3.x;
+            console.log("x1: " +x1);
+            let y1 = Math.pow(1-t, 3) * pt0.y + 3 * Math.pow(1-t, 2) * t * pt1.y + 3 * (1 - t) * Math.pow(t, 2) * pt2.y + Math.pow(t, 3) * pt3.y;
+            console.log("y1: " +y1);
+            console.log("T: " + t);
+            this.drawLine({x: x0, y: y0}, {x: x1, y: y1}, color, ctx);
+            nextX = x1;
+            nextY = y1;
+        }
     }
 
     // pt0:          object ({x: __, y: __})
