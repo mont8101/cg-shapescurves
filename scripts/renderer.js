@@ -13,20 +13,12 @@ class Renderer {
         this.bcFlag = false;
     }
 
-    getStackCount(){
-        for(let key in this.stack){
-            this.stackCount=key;
-        }
-        return this.stackCount;
-    }
-
     // n:  int
     setNumCurveSections(n) {
         this.num_curve_sections = n;
         this.drawSlide(this.slide_idx);
         this.showPoints(this.show_points);
     }
-
 
     // flag:  bool
     showPoints(flag) {
@@ -75,28 +67,28 @@ class Renderer {
     drawSlide0(ctx) {
         this.stack = [];
         this.bcFlag = false;
-        this.drawRectangle({x: 200, y: 150}, {x: 600, y: 500}, [18, 89, 255, 255], ctx);
+        this.drawRectangle({x: 200, y: 150}, {x: 600, y: 500}, [28, 255, 255, 255], ctx);
     }
 
     // ctx:          canvas context
     drawSlide1(ctx) {
         this.stack = [];
         this.bcFlag = false;
-        this.drawCircle({x: 400, y: 300}, 200, [1, 255, 3, 255], ctx);
+        this.drawCircle({x: 400, y: 300}, 200, [255, 175, 94, 255], ctx);
     }
 
     // ctx:          canvas context
     drawSlide2(ctx) {
         this.stack = [];
         this.bcFlag = true;
-        this.drawBezierCurve({x: 100, y: 100}, {x: 200, y: 700}, {x: 500, y: 600}, {x: 400, y: 100}, [1, 255, 3, 255], ctx);
+        this.drawBezierCurve({x: 100, y: 100}, {x: 200, y: 700}, {x: 500, y: 600}, {x: 400, y: 100}, [154, 87, 255, 255], ctx);
     }
 
     // ctx:          canvas context
     drawSlide3(ctx) { //flip back t o 0 when done making name
         this.stack = [];
-        this.bcFlag = false;
-        this.drawLine({x: 100, y: 100}, {x: 100, y: 500}, [255, 0, 0, 255], ctx);
+        this.bcFlag = true;
+        this.drawLine({x: 100, y: 100}, {x: 100, y: 500}, [1, 255, 3, 255], ctx);
         this.drawBezierCurve({x: 100, y: 500}, {x: 300, y: 500}, {x: 300, y: 300}, {x: 100, y: 300}, [1, 255, 3, 255], ctx);
         this.drawBezierCurve({x: 100, y: 300}, {x: 350, y: 300}, {x: 350, y: 100}, {x: 100, y: 100}, [1, 255, 3, 255], ctx);
         this.drawCircle({x: 425, y: 250}, 75, [1, 255, 3, 255], ctx);
@@ -177,12 +169,12 @@ class Renderer {
     drawLine(pt0, pt1, color, ctx)
     { 
         this.stack.push(pt0);
-        if(this.bcFlag){
+        if(this.bcFlag){ //makes name lag with so many loops
             let sCount;
             for(let key in this.stack){
                 sCount=key;
             }
-            if(this.bcFlag && sCount == this.num_curve_sections - 1){
+            if(this.bcFlag && sCount >= this.num_curve_sections - 1){// ==doesnt work for name since it will always be way more with all of the lines made
                 this.stack.push(pt1);
             }
         }
