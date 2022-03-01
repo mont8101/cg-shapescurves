@@ -9,6 +9,7 @@ class Renderer {
         this.slide_idx = 0;
         this.num_curve_sections = num_curve_sections;
         this.show_points = show_points_flag;
+        this.stack = [''];
     }
 
     // n:  int
@@ -22,6 +23,12 @@ class Renderer {
     showPoints(flag) {
         this.show_points = flag;
         this.drawSlide(this.slide_idx);
+        if(flag){
+            document.getElementById("points").innerHTML = JSON.stringify(this.stack);
+        }
+        else{
+            document.getElementById("points").innerHTML = "";
+        }
     }
     
     // slide_idx:  int
@@ -70,10 +77,23 @@ class Renderer {
     // color:        array of int [R, G, B, A]
     // ctx:          canvas context
     drawRectangle(left_bottom, right_top, color, ctx) {
-        this.drawLine(left_bottom, {x: left_bottom.x, y: right_top.y}, color, ctx);
-        this.drawLine({x: left_bottom.x, y: right_top.y}, right_top, color, ctx);
-        this.drawLine(right_top, {x: right_top.x, y: left_bottom.y}, color, ctx);
-        this.drawLine({x: right_top.x, y: left_bottom.y}, left_bottom, color, ctx);
+        this.stack = [];
+        
+        let point = {x: left_bottom.x, y: right_top.y};
+        this.drawLine(left_bottom, point, color, ctx);
+        this.stack.push(left_bottom);
+        
+        point = {x: left_bottom.x, y: right_top.y};
+        this.drawLine(point, right_top, color, ctx);
+        this.stack.push(point);
+        
+        point = {x: right_top.x, y: left_bottom.y};
+        this.drawLine(right_top, point, color, ctx);
+        this.stack.push(right_top);
+        
+        point = {x: right_top.x, y: left_bottom.y};
+        this.drawLine(point, left_bottom, color, ctx);
+        this.stack.push(point);
     }
 
     // center:       object ({x: __, y: __})
@@ -81,21 +101,25 @@ class Renderer {
     // color:        array of int [R, G, B, A]
     // ctx:          canvas context
     drawCircle(center, radius, color, ctx) {
+        this.stack = [];
+
         let tot_pts = this.num_curve_sections;  
         let deg = 0;
         let deg_inc = 360/tot_pts;
-        let nextX = center.x + radius * Math.cos(deg * Math.PI / 180);
-        let nextY = center.y + radius * Math.sin(deg * Math.PI / 180);
+        let nextX = Math.round(center.x + radius * Math.cos(deg * Math.PI / 180));
+        let nextY = Math.round(center.y + radius * Math.sin(deg * Math.PI / 180));
+        this.stack.push({x: nextX, y:nextY});
 
         for(let i = 0; i < tot_pts; i++){
                 let x0 = nextX;
                 let y0 = nextY;
                 deg = deg + deg_inc;
-                let x1 = center.x + (radius * Math.cos(deg * Math.PI / 180));
-                let y1 = center.y + (radius * Math.sin(deg * Math.PI / 180));
+                let x1 = Math.round(center.x + (radius * Math.cos(deg * Math.PI / 180)));
+                let y1 = Math.round(center.y + (radius * Math.sin(deg * Math.PI / 180)));
                 this.drawLine({x: x0, y: y0}, {x: x1, y: y1}, color, ctx);
                 nextX = x1;
                 nextY = y1;
+                this.stack.push({x: nextX, y:nextY});
         }
     }
 
@@ -106,26 +130,25 @@ class Renderer {
     // color:        array of int [R, G, B, A]
     // ctx:          canvas context
     drawBezierCurve(pt0, pt1, pt2, pt3, color, ctx) {
+        this.stack = [];
+
         let tot_pts = this.num_curve_sections; 
         let t_chunk = 1/tot_pts;
         let t = 0;
-        let nextX = Math.pow(1-t, 3) * pt0.x + 3 * Math.pow(1-t, 2) * t * pt1.x + 3 * (1 - t) * Math.pow(t, 2) * pt2.x + Math.pow(t, 3) * pt3.x;
-        let nextY = Math.pow(1-t, 3) * pt0.y + 3 * Math.pow(1-t, 2) * t * pt1.y + 3 * (1 - t) * Math.pow(t, 2) * pt2.y + Math.pow(t, 3) * pt3.y;
+        let nextX = Math.round(Math.pow(1-t, 3) * pt0.x + 3 * Math.pow(1-t, 2) * t * pt1.x + 3 * (1 - t) * Math.pow(t, 2) * pt2.x + Math.pow(t, 3) * pt3.x);
+        let nextY = Math.round(Math.pow(1-t, 3) * pt0.y + 3 * Math.pow(1-t, 2) * t * pt1.y + 3 * (1 - t) * Math.pow(t, 2) * pt2.y + Math.pow(t, 3) * pt3.y);
+        this.stack.push({x: nextX, y:nextY});
         
         for(let i = 0; i < tot_pts; i++){
             let x0 = nextX;
-            console.log("nextX: " + nextX);
             let y0 = nextY;
-            console.log("nextY: " + nextY);
             t = t + t_chunk;
-            let x1 = Math.pow(1-t, 3) * pt0.x + 3 * Math.pow(1-t, 2) * t * pt1.x + 3 * (1 - t) * Math.pow(t, 2) * pt2.x + Math.pow(t, 3) * pt3.x;
-            console.log("x1: " +x1);
-            let y1 = Math.pow(1-t, 3) * pt0.y + 3 * Math.pow(1-t, 2) * t * pt1.y + 3 * (1 - t) * Math.pow(t, 2) * pt2.y + Math.pow(t, 3) * pt3.y;
-            console.log("y1: " +y1);
-            console.log("T: " + t);
+            let x1 = Math.round(Math.pow(1-t, 3) * pt0.x + 3 * Math.pow(1-t, 2) * t * pt1.x + 3 * (1 - t) * Math.pow(t, 2) * pt2.x + Math.pow(t, 3) * pt3.x);
+            let y1 = Math.round(Math.pow(1-t, 3) * pt0.y + 3 * Math.pow(1-t, 2) * t * pt1.y + 3 * (1 - t) * Math.pow(t, 2) * pt2.y + Math.pow(t, 3) * pt3.y);
             this.drawLine({x: x0, y: y0}, {x: x1, y: y1}, color, ctx);
             nextX = x1;
             nextY = y1;
+            this.stack.push({x: nextX, y:nextY});
         }
     }
 
