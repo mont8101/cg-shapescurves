@@ -164,4 +164,4 @@ class Renderer {
         ctx.lineTo(pt1.x, pt1.y);
         ctx.stroke();
     }
-};
+}
