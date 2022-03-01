@@ -10,6 +10,14 @@ class Renderer {
         this.num_curve_sections = num_curve_sections;
         this.show_points = show_points_flag;
         this.stack = [''];
+        this.stackCount = 0;
+    }
+
+    getStackCount(){
+        for(let key in this.stack){
+            this.stackCount=key;
+        }
+        return this.stackCount;
     }
 
     // n:  int
@@ -24,8 +32,18 @@ class Renderer {
     showPoints(flag) {
         this.show_points = flag;
         this.drawSlide(this.slide_idx);
+        let points;
+        let sCount;
         if(flag){
             document.getElementById("points").innerHTML = JSON.stringify(this.stack);
+            for(let key in this.stack){
+                sCount=key;
+            }
+            for(let i = 0; i <= sCount; i++){
+                points = this.stack;
+                this.drawCircle(points[i], 2, [255, 0, 0, 255], this.ctx);
+            }
+
         }
         else{
             document.getElementById("points").innerHTML = "";
@@ -56,24 +74,28 @@ class Renderer {
     // ctx:          canvas context
     drawSlide0(ctx) {
         this.stack = [];
+        this.stackCount = 0;
         this.drawRectangle({x: 200, y: 150}, {x: 600, y: 500}, [18, 89, 255, 255], ctx);
     }
 
     // ctx:          canvas context
     drawSlide1(ctx) {
         this.stack = [];
+        this.stackCount = 0;
         this.drawCircle({x: 400, y: 300}, 200, [1, 255, 3, 255], ctx);
     }
 
     // ctx:          canvas context
     drawSlide2(ctx) {
         this.stack = [];
+        this.stackCount = 0;
         this.drawBezierCurve({x: 100, y: 100}, {x: 200, y: 700}, {x: 500, y: 600}, {x: 400, y: 100}, [1, 255, 3, 255], ctx);
     }
 
     // ctx:          canvas context
     drawSlide3(ctx) { //flip back t o 0 when done making name
         this.stack = [];
+        this.stackCount = 0;
         this.drawLine({x: 100, y: 100}, {x: 100, y: 500}, [255, 0, 0, 255], ctx);
         this.drawBezierCurve({x: 100, y: 500}, {x: 300, y: 500}, {x: 300, y: 300}, {x: 100, y: 300}, [1, 255, 3, 255], ctx);
         this.drawBezierCurve({x: 100, y: 300}, {x: 350, y: 300}, {x: 350, y: 100}, {x: 100, y: 100}, [1, 255, 3, 255], ctx);
@@ -153,8 +175,15 @@ class Renderer {
     // color:        array of int [R, G, B, A]
     // ctx:          canvas context
     drawLine(pt0, pt1, color, ctx)
-    {
+    { 
         this.stack.push(pt0);
+        let sCount;
+        for(let key in this.stack){
+            sCount=key;
+        }
+        if(sCount == this.num_curve_sections - 1){
+           this.stack.push(pt1);
+        }
         ctx.strokeStyle = 'rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',' + (color[3]/255.0) + ')';
         ctx.beginPath();
         ctx.moveTo(pt0.x, pt0.y);
