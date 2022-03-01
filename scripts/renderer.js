@@ -54,46 +54,44 @@ class Renderer {
 
     // ctx:          canvas context
     drawSlide0(ctx) {
+        this.stack = [];
         return this.drawRectangle({x: 200, y: 150}, {x: 600, y: 500}, [18, 89, 255, 255], ctx);
     }
 
     // ctx:          canvas context
     drawSlide1(ctx) {
+        this.stack = [];
         return this.drawCircle({x: 400, y: 300}, 200, [1, 255, 3, 255], ctx);
     }
 
     // ctx:          canvas context
     drawSlide2(ctx) {
+        this.stack = [];
         return this.drawBezierCurve({x: 100, y: 100}, {x: 200, y: 700}, {x: 500, y: 600}, {x: 400, y: 100}, [1, 255, 3, 255], ctx);
     }
 
     // ctx:          canvas context
     drawSlide3(ctx) {
-        this.drawLine({x: 200, y: 100}, {x: 400, y: 250}, [255, 255, 3, 255], ctx);
+        this.stack = [];
+        this.drawLine({x: 200, y: 100}, {x: 400, y: 250}, [255, 0, 0, 255], ctx);
     }
 
     // left_bottom:  object ({x: __, y: __})
     // right_top:    object ({x: __, y: __})
     // color:        array of int [R, G, B, A]
     // ctx:          canvas context
-    drawRectangle(left_bottom, right_top, color, ctx) {
-        this.stack = [];
-        
+    drawRectangle(left_bottom, right_top, color, ctx) {       
         let point = {x: left_bottom.x, y: right_top.y};
         this.drawLine(left_bottom, point, color, ctx);
-        this.stack.push(left_bottom);
         
         point = {x: left_bottom.x, y: right_top.y};
         this.drawLine(point, right_top, color, ctx);
-        this.stack.push(point);
         
         point = {x: right_top.x, y: left_bottom.y};
         this.drawLine(right_top, point, color, ctx);
-        this.stack.push(right_top);
         
         point = {x: right_top.x, y: left_bottom.y};
         this.drawLine(point, left_bottom, color, ctx);
-        this.stack.push(point);
     }
 
     // center:       object ({x: __, y: __})
@@ -101,14 +99,11 @@ class Renderer {
     // color:        array of int [R, G, B, A]
     // ctx:          canvas context
     drawCircle(center, radius, color, ctx) {
-        this.stack = [];
-
         let tot_pts = this.num_curve_sections;  
         let deg = 0;
         let deg_inc = 360/tot_pts;
         let nextX = Math.round(center.x + radius * Math.cos(deg * Math.PI / 180));
         let nextY = Math.round(center.y + radius * Math.sin(deg * Math.PI / 180));
-        this.stack.push({x: nextX, y:nextY});
 
         for(let i = 0; i < tot_pts; i++){
                 let x0 = nextX;
@@ -119,7 +114,6 @@ class Renderer {
                 this.drawLine({x: x0, y: y0}, {x: x1, y: y1}, color, ctx);
                 nextX = x1;
                 nextY = y1;
-                this.stack.push({x: nextX, y:nextY});
         }
     }
 
@@ -130,14 +124,11 @@ class Renderer {
     // color:        array of int [R, G, B, A]
     // ctx:          canvas context
     drawBezierCurve(pt0, pt1, pt2, pt3, color, ctx) {
-        this.stack = [];
-
         let tot_pts = this.num_curve_sections; 
         let t_chunk = 1/tot_pts;
         let t = 0;
         let nextX = Math.round(Math.pow(1-t, 3) * pt0.x + 3 * Math.pow(1-t, 2) * t * pt1.x + 3 * (1 - t) * Math.pow(t, 2) * pt2.x + Math.pow(t, 3) * pt3.x);
         let nextY = Math.round(Math.pow(1-t, 3) * pt0.y + 3 * Math.pow(1-t, 2) * t * pt1.y + 3 * (1 - t) * Math.pow(t, 2) * pt2.y + Math.pow(t, 3) * pt3.y);
-        this.stack.push({x: nextX, y:nextY});
         
         for(let i = 0; i < tot_pts; i++){
             let x0 = nextX;
@@ -148,7 +139,6 @@ class Renderer {
             this.drawLine({x: x0, y: y0}, {x: x1, y: y1}, color, ctx);
             nextX = x1;
             nextY = y1;
-            this.stack.push({x: nextX, y:nextY});
         }
     }
 
@@ -158,6 +148,7 @@ class Renderer {
     // ctx:          canvas context
     drawLine(pt0, pt1, color, ctx)
     {
+        this.stack.push(pt0);
         ctx.strokeStyle = 'rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',' + (color[3]/255.0) + ')';
         ctx.beginPath();
         ctx.moveTo(pt0.x, pt0.y);
