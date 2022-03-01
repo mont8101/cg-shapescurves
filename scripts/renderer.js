@@ -16,6 +16,7 @@ class Renderer {
     setNumCurveSections(n) {
         this.num_curve_sections = n;
         this.drawSlide(this.slide_idx);
+        this.showPoints(this.show_points);
     }
 
 
@@ -55,32 +56,37 @@ class Renderer {
     // ctx:          canvas context
     drawSlide0(ctx) {
         this.stack = [];
-        return this.drawRectangle({x: 200, y: 150}, {x: 600, y: 500}, [18, 89, 255, 255], ctx);
+        this.drawRectangle({x: 200, y: 150}, {x: 600, y: 500}, [18, 89, 255, 255], ctx);
     }
 
     // ctx:          canvas context
     drawSlide1(ctx) {
         this.stack = [];
-        return this.drawCircle({x: 400, y: 300}, 200, [1, 255, 3, 255], ctx);
+        this.drawCircle({x: 400, y: 300}, 200, [1, 255, 3, 255], ctx);
     }
 
     // ctx:          canvas context
     drawSlide2(ctx) {
         this.stack = [];
-        return this.drawBezierCurve({x: 100, y: 100}, {x: 200, y: 700}, {x: 500, y: 600}, {x: 400, y: 100}, [1, 255, 3, 255], ctx);
+        this.drawBezierCurve({x: 100, y: 100}, {x: 200, y: 700}, {x: 500, y: 600}, {x: 400, y: 100}, [1, 255, 3, 255], ctx);
     }
 
     // ctx:          canvas context
-    drawSlide3(ctx) {
+    drawSlide3(ctx) { //flip back t o 0 when done making name
         this.stack = [];
-        this.drawLine({x: 200, y: 100}, {x: 400, y: 250}, [255, 0, 0, 255], ctx);
+        this.drawLine({x: 100, y: 100}, {x: 100, y: 500}, [255, 0, 0, 255], ctx);
+        this.drawBezierCurve({x: 100, y: 500}, {x: 300, y: 500}, {x: 300, y: 300}, {x: 100, y: 300}, [1, 255, 3, 255], ctx);
+        this.drawBezierCurve({x: 100, y: 300}, {x: 350, y: 300}, {x: 350, y: 100}, {x: 100, y: 100}, [1, 255, 3, 255], ctx);
+        this.drawCircle({x: 425, y: 250}, 75, [1, 255, 3, 255], ctx);
+        this.drawBezierCurve({x: 350, y: 250}, {x: 350, y: 50}, {x: 500, y: 100}, {x: 500, y: 125}, [1, 255, 3, 255], ctx);
+        this.drawBezierCurve({x: 525, y: 100}, {x: 525, y: 400}, {x: 675, y: 400}, {x: 675, y: 100}, [1, 255, 3, 255], ctx);
     }
 
     // left_bottom:  object ({x: __, y: __})
     // right_top:    object ({x: __, y: __})
     // color:        array of int [R, G, B, A]
     // ctx:          canvas context
-    drawRectangle(left_bottom, right_top, color, ctx) {       
+    drawRectangle(left_bottom, right_top, color, ctx) {   
         let point = {x: left_bottom.x, y: right_top.y};
         this.drawLine(left_bottom, point, color, ctx);
         
