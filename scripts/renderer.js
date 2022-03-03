@@ -33,7 +33,7 @@ class Renderer {
             }
             for(let i = 0; i <= sCount; i++){
                 points = this.stack;
-                this.drawCircle(points[i], 2, [255, 0, 0, 255], this.ctx);
+                this.drawRectangle({x: points[i].x -2 , y:points[i].y - 2}, {x: points[i].x + 2 , y:points[i].y + 2}, [255, 0, 0, 255], this.ctx);
             }
 
         }
